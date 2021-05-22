@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    //ターンステータス
     public enum TURN
     {
         PLAYER_TURN,
@@ -13,24 +14,44 @@ public class GameManager : MonoBehaviour
         END_TURN,
     }
     private TURN m_turn;
+
+    //ターンLoop回数
     [SerializeField]
     private int m_loopNum = 5;
     private int m_nowLoopNum = 0;
 
+    //グッズ
     [SerializeField]
-    private GameObject m_goods;
+    private GameObject m_goods = null;
 
+    //ゲスト
     [SerializeField]
     private List<GameObject> m_guests = new List<GameObject>();
+    //ゲストの入札数
     private int m_bidCount = 0;
+
+    //プレイヤー
+    [SerializeField]
+    private GameObject m_player = null;
+    //解答時間
+    [SerializeField]
+    private float m_playerTurnFream = 3;
+    //解答時間カウント用
+    private float m_playerTurnFreamCount = 0;
+
 
     //最後にbidしたのがプレイヤー
     private bool m_lastBidPlayer = true;
 
+
+    //次のシーン設定
+    [SerializeField]
+    private int m_nextSceneNumber = 0;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        m_turn = TURN.PLAYER_TURN;
     }
 
     // Update is called once per frame
@@ -64,7 +85,24 @@ public class GameManager : MonoBehaviour
 
     private void PlayerTurn()
     {
-        m_lastBidPlayer = true;
+        if(m_playerTurnFream < m_playerTurnFreamCount)
+        {
+            Player player = m_player.GetComponent<Player>();
+            //プレイヤーのレイズ額をグッズのカレントに足す
+            Goods goods = m_goods.GetComponent<Goods>();
+            goods.SetCurrentMoney(goods.GetCurrentMoney() + player.GetRaiseValue());
+
+            player.ResetButtons();
+
+            m_turn = TURN.GUEST_TURN;
+
+            //プレイヤーのレイズ額が0より大きかったら
+            m_lastBidPlayer = true;
+            //else
+            m_lastBidPlayer = false;
+        }
+
+        m_playerTurnFreamCount+=Time.deltaTime;
     }
 
     private void GuestTurn()
@@ -87,6 +125,10 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        //グッズのカレントに足す
+        var goods = m_goods.GetComponent<Goods>();
+        goods.SetCurrentMoney(goods.GetCurrentMoney() + maxBidNum);
+
         m_bidCount = bidCount;
         m_turn = TURN.CHECK_TURN;
     }
@@ -108,15 +150,17 @@ public class GameManager : MonoBehaviour
 
     private void EndTurn()
     {
+        //プレイヤーが最後だったらグッズのカレント額引く
+        //客が最後だったらグッズのカレント額足す
         if(m_lastBidPlayer)
         {
-            PlayerPrefs.SetInt("ResultScore", PlayerPrefs.GetInt("Result") + m_goods.GetComponent<Goods>().GetCurrentMoney());
+            PlayerPrefs.SetInt("ResultScore", PlayerPrefs.GetInt("ResultScore") - m_goods.GetComponent<Goods>().GetCurrentMoney());
         }
         else
         {
-            PlayerPrefs.SetInt("ResultScore", PlayerPrefs.GetInt("Result") - m_goods.GetComponent<Goods>().GetCurrentMoney());
+            PlayerPrefs.SetInt("ResultScore", PlayerPrefs.GetInt("ResultScore") + m_goods.GetComponent<Goods>().GetCurrentMoney());
         }
 
-        SceneManager.LoadScene("Result");
+        SceneManager.LoadScene(m_nextSceneNumber);
     }
 }

@@ -11,19 +11,21 @@ public class Guest : MonoBehaviour
     [SerializeField]
     private int m_haveMoney;
 
-    // ó~ÇµÇ¢ìx
-    private float m_mood = 1.0f;
+    // ó~ÇµÇ¢ìx(ÇTíiäK : 0Å`4)
+    private int m_mood = 4;
 
+    // ó~ÇµÇ¢ìxÅi% ÅF 0.0Å`1.0Åj
+    private float m_wantPer = 1.0f;
 
     // ÉLÉÉÉbÉVÉÖÇµÇƒÇ®Ç≠
-    Voltage voltage;
-    Goods goods;
+    Voltage m_voltage;
+    Goods m_goods;
 
     // Start is called before the first frame update
     void Start()
     {
-        voltage = FindObjectOfType<Voltage>();
-        goods = FindObjectOfType<Goods>();
+        m_voltage = FindObjectOfType<Voltage>();
+        m_goods = FindObjectOfType<Goods>();
     }
 
     // Update is called once per frame
@@ -34,7 +36,28 @@ public class Guest : MonoBehaviour
 
     public void UpdateMood()
     {
-        
+
+        // ó~ÇµÇ¢ìxÇÃçXêV
+        if(m_haveMoney < m_goods.GetCurrentMoney())
+        {
+            // Ç®ã‡Ç™Ç»Ç©Ç¡ÇΩÇÁì¸éDà”ó~0Ç…
+            m_wantPer = 0.0f;
+            m_mood = 0;
+        }
+        else
+        {
+            // ç≈çÇì¸éDäzÇ∆äÛñ]çwì¸ã‡äzÇ©ÇÁó~ÇµÇ¢ìxÇåvéZ
+            float want = m_goods.GetCurrentMoney() / m_targetMoney;
+            m_wantPer = (2.0f - want) * 0.5f;
+            if(m_wantPer < 0.0f)
+            {
+                m_wantPer = 0.0f;
+            }
+
+            m_mood = (int)Mathf.Floor(m_wantPer * 5.0f);
+            m_mood %= 5;
+        }
+
     }
 
     public int Bidding()
@@ -42,7 +65,7 @@ public class Guest : MonoBehaviour
         int bidNum = 0;
 
         // ì¸éDà”ó~ÇéZèo(âº)
-        float bidMotivation = m_mood * voltage.GetVoltageValue();
+        float bidMotivation = m_mood * m_voltage.GetVoltageValue();
 
         // ì¸éDÇ∑ÇÈÇ©Ç«Ç§Ç©
         if (Random.Range(0.0f, 1.0f) < bidMotivation)
