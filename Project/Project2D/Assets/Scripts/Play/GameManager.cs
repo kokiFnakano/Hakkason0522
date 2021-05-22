@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -44,6 +45,9 @@ public class GameManager : MonoBehaviour
     private float m_playerTurnSecond = 3;
     //解答時間カウント用
     private float m_playerTurnSecondCount = 0;
+    [SerializeField]
+    private GameObject m_playerTimeTextObject;
+    private Text m_playerTimeText;
 
 
     //最後にbidしたのがプレイヤー
@@ -63,12 +67,16 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         m_turn = TURN.PLAYER_TURN;
+
+        m_playerTimeText = m_playerTimeTextObject.GetComponent<Text>();
     }
 
     // Update is called once per frame
     void Update()
     {
         TurnLoop();
+
+        
     }
 
 
@@ -78,18 +86,22 @@ public class GameManager : MonoBehaviour
         {
             case TURN.PLAYER_TURN:
                 PlayerTurn();
+                Debug.Log("P");
                 break;
 
             case TURN.GUEST_TURN:
                 GuestTurn();
+                Debug.Log("G");
                 break;
 
             case TURN.CHECK_TURN:
                 CheckTurn();
+                Debug.Log("C");
                 break;
 
             case TURN.END_TURN:
                 EndTurn();
+                Debug.Log("E");
                 break;
         }
     }
@@ -102,6 +114,7 @@ public class GameManager : MonoBehaviour
             //プレイヤーのレイズ額をグッズのカレントに足す
             Goods goods = m_goods.GetComponent<Goods>();
             goods.SetCurrentMoney(goods.GetCurrentMoney() + player.GetRaiseValue());
+            //goods.SetCurrentMoney(goods.GetCurrentMoney() + 10000);
 
             VoltageUpdate(5);
 
@@ -119,12 +132,14 @@ public class GameManager : MonoBehaviour
             m_playerTurnSecondCount = 0;
         }
 
+        //m_playerTimeText.text = m_playerTurnSecondCount.ToString();
+
         m_playerTurnSecondCount+=Time.deltaTime;
     }
 
     private void GuestTurn()
     {
-        if (m_guestTurnSecond == 0)
+        if (m_guestTurnSecondCount == 0)
         {
             int bidCount = 0;
             int maxBidNum = 0;
@@ -147,7 +162,7 @@ public class GameManager : MonoBehaviour
             //グッズのカレントに足す
             var goods = m_goods.GetComponent<Goods>();
             goods.SetCurrentMoney(goods.GetCurrentMoney() + maxBidNum);
-
+            m_playerTimeText.text = goods.GetCurrentMoney().ToString();
 
             VoltageUpdate(bidCount);
 
@@ -172,14 +187,16 @@ public class GameManager : MonoBehaviour
         {
             m_turn = TURN.END_TURN;
         }
-
-        //ベットした客がいなかったとき
-        if(m_bidCount == 0)
+        else if(m_bidCount == 0)
         {
             m_turn = TURN.END_TURN;
         }
+        else
+        {
+            m_turn = TURN.PLAYER_TURN;
+        }
 
-        m_turn = TURN.PLAYER_TURN;
+        m_nowLoopNum++;
     }
 
     private void EndTurn()
@@ -211,6 +228,11 @@ public class GameManager : MonoBehaviour
         else
         {
             voltage.SetVoltageValue(voltage.GetVoltageValue() - (10 - raizeNum));
+        }
+
+        foreach (var guest in m_guests)
+        {
+            guest.GetComponent<Guest>().UpdateMood();
         }
     }
 }
