@@ -34,7 +34,24 @@ public class Guest : MonoBehaviour
 
     public void UpdateMood()
     {
-        
+
+        // —~‚µ‚¢“x‚ÌXV
+        if(m_haveMoney < goods.GetCurrentMoney())
+        {
+            // ‚¨‹à‚ª‚È‚©‚Á‚½‚ç“üDˆÓ—~0‚É
+            m_mood = 0.0f;
+        }
+        else
+        {
+            // Å‚“üDŠz‚ÆŠó–]w“ü‹àŠz‚©‚ç—~‚µ‚¢“x‚ğŒvZ
+            float mood = goods.GetCurrentMoney() / m_targetMoney;
+            m_mood = (2.0f - mood) * 0.5f;
+            if(m_mood < 0.0f)
+            {
+                m_mood = 0.0f;
+            }
+        }
+
     }
 
     public int Bidding()
