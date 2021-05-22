@@ -115,6 +115,8 @@ public class GameManager : MonoBehaviour
             m_lastBidPlayer = true;
             //else
             m_lastBidPlayer = false;
+
+            m_playerTurnSecondCount = 0;
         }
 
         m_playerTurnSecondCount+=Time.deltaTime;
