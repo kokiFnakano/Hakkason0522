@@ -30,6 +30,11 @@ public class GameManager : MonoBehaviour
     private List<GameObject> m_guests = new List<GameObject>();
     //ゲストの入札数
     private int m_bidCount = 0;
+    //ゲストターン時間
+    [SerializeField]
+    private float m_guestTurnSecond = 3;
+    //解答時間カウント用
+    private float m_guestTurnSecondCount = 0;
 
     //プレイヤー
     [SerializeField]
@@ -117,35 +122,45 @@ public class GameManager : MonoBehaviour
 
     private void GuestTurn()
     {
-        int bidCount = 0;
-        int maxBidNum = 0;
-
-        foreach (var guest in m_guests)
+        if (m_guestTurnSecond == 0)
         {
-            int bidNum = guest.GetComponent<Guest>().Bidding();
-            if (0 < bidNum)
-            {
-                bidCount++;
-                m_lastBidPlayer = false;
+            int bidCount = 0;
+            int maxBidNum = 0;
 
-                if(maxBidNum < bidNum)
+            foreach (var guest in m_guests)
+            {
+                int bidNum = guest.GetComponent<Guest>().Bidding();
+                if (0 < bidNum)
                 {
-                    maxBidNum = bidNum;
+                    bidCount++;
+                    m_lastBidPlayer = false;
+
+                    if (maxBidNum < bidNum)
+                    {
+                        maxBidNum = bidNum;
+                    }
                 }
             }
+
+            //グッズのカレントに足す
+            var goods = m_goods.GetComponent<Goods>();
+            goods.SetCurrentMoney(goods.GetCurrentMoney() + maxBidNum);
+
+
+            VoltageUpdate(bidCount);
+
+
+            m_beforeMoney = goods.GetCurrentMoney();
+            m_bidCount = bidCount;
         }
 
-        //グッズのカレントに足す
-        var goods = m_goods.GetComponent<Goods>();
-        goods.SetCurrentMoney(goods.GetCurrentMoney() + maxBidNum);
+        m_guestTurnSecondCount += Time.deltaTime;
 
-
-        VoltageUpdate(bidCount);
-
-
-        m_beforeMoney = goods.GetCurrentMoney();
-        m_bidCount = bidCount;
-        m_turn = TURN.CHECK_TURN;
+        if (m_guestTurnSecond < m_guestTurnSecondCount)
+        {
+            m_turn = TURN.CHECK_TURN;
+            m_guestTurnSecondCount = 0;
+        }
     }
 
     private void CheckTurn()
@@ -161,6 +176,8 @@ public class GameManager : MonoBehaviour
         {
             m_turn = TURN.END_TURN;
         }
+
+        m_turn = TURN.PLAYER_TURN;
     }
 
     private void EndTurn()
