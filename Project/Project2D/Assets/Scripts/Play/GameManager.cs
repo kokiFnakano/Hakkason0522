@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
     //グッズ
     [SerializeField]
     private GameObject m_goods = null;
+    private int m_beforeMoney = 0;
 
     //ゲスト
     [SerializeField]
@@ -35,9 +36,9 @@ public class GameManager : MonoBehaviour
     private GameObject m_player = null;
     //解答時間
     [SerializeField]
-    private float m_playerTurnFream = 3;
+    private float m_playerTurnSecond = 3;
     //解答時間カウント用
-    private float m_playerTurnFreamCount = 0;
+    private float m_playerTurnSecondCount = 0;
 
 
     //最後にbidしたのがプレイヤー
@@ -47,6 +48,11 @@ public class GameManager : MonoBehaviour
     //次のシーン設定
     [SerializeField]
     private int m_nextSceneNumber = 0;
+
+
+    //Voltage
+    [SerializeField]
+    GameObject m_voltage = null;
 
     // Start is called before the first frame update
     void Start()
@@ -85,12 +91,16 @@ public class GameManager : MonoBehaviour
 
     private void PlayerTurn()
     {
-        if(m_playerTurnFream < m_playerTurnFreamCount)
+        if(m_playerTurnSecond < m_playerTurnSecondCount)
         {
             Player player = m_player.GetComponent<Player>();
             //プレイヤーのレイズ額をグッズのカレントに足す
             Goods goods = m_goods.GetComponent<Goods>();
             goods.SetCurrentMoney(goods.GetCurrentMoney() + player.GetRaiseValue());
+
+            VoltageUpdate(5);
+
+            m_beforeMoney = goods.GetCurrentMoney();
 
             player.ResetButtons();
 
@@ -102,7 +112,7 @@ public class GameManager : MonoBehaviour
             m_lastBidPlayer = false;
         }
 
-        m_playerTurnFreamCount+=Time.deltaTime;
+        m_playerTurnSecondCount+=Time.deltaTime;
     }
 
     private void GuestTurn()
@@ -129,6 +139,11 @@ public class GameManager : MonoBehaviour
         var goods = m_goods.GetComponent<Goods>();
         goods.SetCurrentMoney(goods.GetCurrentMoney() + maxBidNum);
 
+
+        VoltageUpdate(bidCount);
+
+
+        m_beforeMoney = goods.GetCurrentMoney();
         m_bidCount = bidCount;
         m_turn = TURN.CHECK_TURN;
     }
@@ -162,5 +177,21 @@ public class GameManager : MonoBehaviour
         }
 
         SceneManager.LoadScene(m_nextSceneNumber);
+    }
+
+
+    void VoltageUpdate(int raizeNum)
+    {
+        Goods goods = m_goods.GetComponent<Goods>();
+        Voltage voltage = m_voltage.GetComponent<Voltage>();
+
+        if(raizeNum >= 4)
+        {
+            voltage.SetVoltageValue(voltage.GetVoltageValue() + raizeNum * ((goods.GetCurrentMoney() - m_beforeMoney) / 20000));
+        }
+        else
+        {
+            voltage.SetVoltageValue(voltage.GetVoltageValue() - (10 - raizeNum));
+        }
     }
 }
