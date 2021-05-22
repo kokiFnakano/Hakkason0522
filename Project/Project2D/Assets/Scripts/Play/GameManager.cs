@@ -23,21 +23,27 @@ public class GameManager : MonoBehaviour
     //グッズ
     [SerializeField]
     private GameObject m_goods = null;
+    private int m_beforeMoney = 0;
 
     //ゲスト
     [SerializeField]
     private List<GameObject> m_guests = new List<GameObject>();
     //ゲストの入札数
     private int m_bidCount = 0;
+    //ゲストターン時間
+    [SerializeField]
+    private float m_guestTurnSecond = 3;
+    //解答時間カウント用
+    private float m_guestTurnSecondCount = 0;
 
     //プレイヤー
     [SerializeField]
     private GameObject m_player = null;
     //解答時間
     [SerializeField]
-    private float m_playerTurnFream = 3;
+    private float m_playerTurnSecond = 3;
     //解答時間カウント用
-    private float m_playerTurnFreamCount = 0;
+    private float m_playerTurnSecondCount = 0;
 
 
     //最後にbidしたのがプレイヤー
@@ -47,6 +53,11 @@ public class GameManager : MonoBehaviour
     //次のシーン設定
     [SerializeField]
     private int m_nextSceneNumber = 0;
+
+
+    //Voltage
+    [SerializeField]
+    GameObject m_voltage = null;
 
     // Start is called before the first frame update
     void Start()
@@ -85,12 +96,16 @@ public class GameManager : MonoBehaviour
 
     private void PlayerTurn()
     {
-        if(m_playerTurnFream < m_playerTurnFreamCount)
+        if(m_playerTurnSecond < m_playerTurnSecondCount)
         {
             Player player = m_player.GetComponent<Player>();
             //プレイヤーのレイズ額をグッズのカレントに足す
             Goods goods = m_goods.GetComponent<Goods>();
             goods.SetCurrentMoney(goods.GetCurrentMoney() + player.GetRaiseValue());
+
+            VoltageUpdate(5);
+
+            m_beforeMoney = goods.GetCurrentMoney();
 
             player.ResetButtons();
 
@@ -102,35 +117,50 @@ public class GameManager : MonoBehaviour
             m_lastBidPlayer = false;
         }
 
-        m_playerTurnFreamCount+=Time.deltaTime;
+        m_playerTurnSecondCount+=Time.deltaTime;
     }
 
     private void GuestTurn()
     {
-        int bidCount = 0;
-        int maxBidNum = 0;
-
-        foreach (var guest in m_guests)
+        if (m_guestTurnSecond == 0)
         {
-            int bidNum = guest.GetComponent<Guest>().Bidding();
-            if (0 < bidNum)
-            {
-                bidCount++;
-                m_lastBidPlayer = false;
+            int bidCount = 0;
+            int maxBidNum = 0;
 
-                if(maxBidNum < bidNum)
+            foreach (var guest in m_guests)
+            {
+                int bidNum = guest.GetComponent<Guest>().Bidding();
+                if (0 < bidNum)
                 {
-                    maxBidNum = bidNum;
+                    bidCount++;
+                    m_lastBidPlayer = false;
+
+                    if (maxBidNum < bidNum)
+                    {
+                        maxBidNum = bidNum;
+                    }
                 }
             }
+
+            //グッズのカレントに足す
+            var goods = m_goods.GetComponent<Goods>();
+            goods.SetCurrentMoney(goods.GetCurrentMoney() + maxBidNum);
+
+
+            VoltageUpdate(bidCount);
+
+
+            m_beforeMoney = goods.GetCurrentMoney();
+            m_bidCount = bidCount;
         }
 
-        //グッズのカレントに足す
-        var goods = m_goods.GetComponent<Goods>();
-        goods.SetCurrentMoney(goods.GetCurrentMoney() + maxBidNum);
+        m_guestTurnSecondCount += Time.deltaTime;
 
-        m_bidCount = bidCount;
-        m_turn = TURN.CHECK_TURN;
+        if (m_guestTurnSecond < m_guestTurnSecondCount)
+        {
+            m_turn = TURN.CHECK_TURN;
+            m_guestTurnSecondCount = 0;
+        }
     }
 
     private void CheckTurn()
@@ -146,6 +176,8 @@ public class GameManager : MonoBehaviour
         {
             m_turn = TURN.END_TURN;
         }
+
+        m_turn = TURN.PLAYER_TURN;
     }
 
     private void EndTurn()
@@ -162,5 +194,21 @@ public class GameManager : MonoBehaviour
         }
 
         SceneManager.LoadScene(m_nextSceneNumber);
+    }
+
+
+    void VoltageUpdate(int raizeNum)
+    {
+        Goods goods = m_goods.GetComponent<Goods>();
+        Voltage voltage = m_voltage.GetComponent<Voltage>();
+
+        if(raizeNum >= 4)
+        {
+            voltage.SetVoltageValue(voltage.GetVoltageValue() + raizeNum * ((goods.GetCurrentMoney() - m_beforeMoney) / 20000));
+        }
+        else
+        {
+            voltage.SetVoltageValue(voltage.GetVoltageValue() - (10 - raizeNum));
+        }
     }
 }
