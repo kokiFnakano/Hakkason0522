@@ -19,8 +19,9 @@ public class Guest : MonoBehaviour
         
     }
 
-    public bool Bidding()
+    public int Bidding()
     {
-        return true;
+        int bidNum = 0;
+        return bidNum;
     }
 }

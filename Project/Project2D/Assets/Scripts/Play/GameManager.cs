@@ -8,9 +8,13 @@ public class GameManager : MonoBehaviour
     {
         PLAYER_TURN,
         GUEST_TURN,
+        CHECK_TURN,
         END_TURN,
     }
     private TURN m_turn;
+    [SerializeField]
+    private int m_loopNum = 5;
+    private int m_nowLoopNum = 0;
 
     [SerializeField]
     private GameObject m_goods;
@@ -43,6 +47,9 @@ public class GameManager : MonoBehaviour
                 GuestTurn();
                 break;
 
+            case TURN.CHECK_TURN:
+                break;
+
             case TURN.END_TURN:
                 break;
         }
@@ -65,9 +72,14 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if (bidCount >= 1)
-            m_turn = TURN.PLAYER_TURN;
-        else
+        m_turn = TURN.CHECK_TURN;
+    }
+
+    private void CheckTurn()
+    {
+        if(m_loopNum == m_nowLoopNum)
+        {
             m_turn = TURN.END_TURN;
+        }
     }
 }
