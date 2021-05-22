@@ -3,11 +3,9 @@ using UnityEngine.UI;
 
 public class Guest : MonoBehaviour
 {
-    [SerializeField]
     private int m_targetMoney;
 
     // Š‹à
-    [SerializeField]
     private static int m_haveMoney;
 
     // —~‚µ‚¢“x(‚T’iŠK : 0`4)
@@ -33,6 +31,10 @@ public class Guest : MonoBehaviour
 
         // Šç‚ğæ“¾
         m_face = transform.GetChild(0).GetComponent<Image>();
+
+
+        // Š‹à‚ğİ’è
+        m_haveMoney = Random.Range(500000, 10000000);
 
         UpdateTargetMoney();
     }
