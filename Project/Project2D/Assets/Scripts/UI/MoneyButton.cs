@@ -8,7 +8,7 @@ using System;
 
 
 
-public class MoneyButton : MonoBehaviour, IPointerEnterHandler,IPointerExitHandler
+public class MoneyButton : MonoBehaviour, IPointerEnterHandler,IPointerExitHandler,IPointerClickHandler
 {
     [SerializeField] int value;
 
@@ -19,6 +19,7 @@ public class MoneyButton : MonoBehaviour, IPointerEnterHandler,IPointerExitHandl
     Button button;
     CanvasRenderer cr;
 
+    AudioSource audioSource;
 
 
 
@@ -27,6 +28,9 @@ public class MoneyButton : MonoBehaviour, IPointerEnterHandler,IPointerExitHandl
     {
         button = GetComponent<Button>();
         cr = GetComponent<CanvasRenderer>();
+
+        audioSource = GetComponent<AudioSource>();
+
     }
 
     // Update is called once per frame
@@ -46,8 +50,10 @@ public class MoneyButton : MonoBehaviour, IPointerEnterHandler,IPointerExitHandl
     {
         GetComponent<RectTransform>().localScale = new Vector3(minScale, minScale, minScale);
     }
-
-
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        audioSource.Play();
+    }
 
 
 
