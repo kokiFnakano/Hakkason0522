@@ -42,10 +42,10 @@ public class Guest : MonoBehaviour
     void UpdateTargetMoney()
     {
         // Šó–]w“ü‹àŠz‚ğXV
-        float per = 1.0f - (m_goods.GetCurrentMoney() / m_haveMoney);
+        float per = m_goods.GetCurrentMoney() / m_haveMoney;
         if (per < 0.9f)
         {
-            m_targetMoney = (int)(m_goods.GetCurrentMoney() * (1.0f + Random.Range(0.1f, 0.1f + 1.0f - per)));
+            m_targetMoney = (int)(m_goods.GetCurrentMoney() * (1.0f + Random.Range(0.1f, 1.0f - per)));
         }
         else
         {
