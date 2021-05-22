@@ -75,8 +75,6 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         TurnLoop();
-
-        
     }
 
 
@@ -85,23 +83,25 @@ public class GameManager : MonoBehaviour
         switch (m_turn)
         {
             case TURN.PLAYER_TURN:
+                
                 PlayerTurn();
-                Debug.Log("P");
+                //Debug.Log("P");
                 break;
 
             case TURN.GUEST_TURN:
+                
                 GuestTurn();
-                Debug.Log("G");
+                //Debug.Log("G");
                 break;
 
             case TURN.CHECK_TURN:
                 CheckTurn();
-                Debug.Log("C");
+                //Debug.Log("C");
                 break;
 
             case TURN.END_TURN:
                 EndTurn();
-                Debug.Log("E");
+                //Debug.Log("E");
                 break;
         }
     }
@@ -114,7 +114,6 @@ public class GameManager : MonoBehaviour
             //プレイヤーのレイズ額をグッズのカレントに足す
             Goods goods = m_goods.GetComponent<Goods>();
             goods.SetCurrentMoney(goods.GetCurrentMoney() + player.GetRaiseValue());
-            //goods.SetCurrentMoney(goods.GetCurrentMoney() + 10000);
 
             VoltageUpdate(5);
 
@@ -132,7 +131,7 @@ public class GameManager : MonoBehaviour
             m_playerTurnSecondCount = 0;
         }
 
-        //m_playerTimeText.text = m_playerTurnSecondCount.ToString();
+        m_playerTimeText.text = m_playerTurnSecondCount.ToString();
 
         m_playerTurnSecondCount+=Time.deltaTime;
     }
@@ -162,7 +161,6 @@ public class GameManager : MonoBehaviour
             //グッズのカレントに足す
             var goods = m_goods.GetComponent<Goods>();
             goods.SetCurrentMoney(goods.GetCurrentMoney() + maxBidNum);
-            m_playerTimeText.text = goods.GetCurrentMoney().ToString();
 
             VoltageUpdate(bidCount);
 
