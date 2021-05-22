@@ -19,7 +19,7 @@ public class Voltage : MonoBehaviour
     }
 
 
-    public float SetVoltageValue()
+    public float GetVoltageValue()
     {
         return m_voltageValue;
     }
