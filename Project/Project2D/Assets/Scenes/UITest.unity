@@ -527,6 +527,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Buttons
       objectReference: {fileID: 0}
+    - target: {fileID: 8166189704657850503, guid: c23cee276047cc04bb74d0b81cfa792b, type: 3}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: ec870185b537caf4d9b90de46886a40e, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c23cee276047cc04bb74d0b81cfa792b, type: 3}
 --- !u!1001 &4995661556423483070
