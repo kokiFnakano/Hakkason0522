@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Guest : MonoBehaviour
 {
@@ -20,12 +19,21 @@ public class Guest : MonoBehaviour
     // キャッシュしておく
     Voltage m_voltage;
     Goods m_goods;
+    Sprite[] m_faces;
+
+    Image m_face;
 
     // Start is called before the first frame update
     void Start()
     {
+        // キャッシュ
         m_voltage = FindObjectOfType<Voltage>();
         m_goods = FindObjectOfType<Goods>();
+        m_faces = Resources.LoadAll<Sprite>("Face");
+
+        // 顔を取得
+        m_face = transform.GetChild(0).GetComponent<Image>();
+        
     }
 
     // Update is called once per frame
@@ -57,6 +65,9 @@ public class Guest : MonoBehaviour
             m_mood = (int)Mathf.Floor(m_wantPer * 5.0f);
             m_mood %= 5;
         }
+
+        // 顔を変更
+        m_face.sprite = m_faces[m_mood];
 
     }
 
