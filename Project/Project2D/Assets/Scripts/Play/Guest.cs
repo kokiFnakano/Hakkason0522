@@ -8,7 +8,7 @@ public class Guest : MonoBehaviour
 
     // Š‹à
     [SerializeField]
-    private int m_haveMoney;
+    private static int m_haveMoney;
 
     // —~‚µ‚¢“x(‚T’iŠK : 0`4)
     private int m_mood = 4;
@@ -33,6 +33,22 @@ public class Guest : MonoBehaviour
 
         // Šç‚ğæ“¾
         m_face = transform.GetChild(0).GetComponent<Image>();
+
+        UpdateTargetMoney();
+    }
+
+    void UpdateTargetMoney()
+    {
+        // Šó–]w“ü‹àŠz‚ğXV
+        float per = 1.0f - (m_goods.GetCurrentMoney() / m_haveMoney);
+        if (per < 0.9f)
+        {
+            m_targetMoney = (int)(m_goods.GetCurrentMoney() * (1.0f + Random.Range(0.1f, 0.1f + 1.0f - per)));
+        }
+        else
+        {
+            m_targetMoney = m_haveMoney;
+        }
         
     }
 
@@ -76,7 +92,7 @@ public class Guest : MonoBehaviour
         int bidNum = 0;
 
         // “üDˆÓ—~‚ğZo(‰¼)
-        float bidMotivation = m_mood * m_voltage.GetVoltageValue();
+        float bidMotivation = m_wantPer * (m_voltage.GetVoltageValue() * 0.005f);
 
         // “üD‚·‚é‚©‚Ç‚¤‚©
         if (Random.Range(0.0f, 1.0f) < bidMotivation)
