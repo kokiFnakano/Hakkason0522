@@ -8,11 +8,8 @@ using System;
 
 
 
-public class MoneyButton : MonoBehaviour, IPointerEnterHandler,IPointerExitHandler,IPointerClickHandler
+public class MoneyButton : MonoBehaviour, IPointerEnterHandler,IPointerExitHandler
 {
-    [SerializeField] EventSystem eventSystem;
-
-
     [SerializeField] int value;
 
     [SerializeField] float minScale;
@@ -47,27 +44,11 @@ public class MoneyButton : MonoBehaviour, IPointerEnterHandler,IPointerExitHandl
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        //try
-        //{
-        //    if (eventSystem.currentSelectedGameObject.gameObject != gameObject)
-                GetComponent<RectTransform>().localScale = new Vector3(minScale, minScale, minScale);
-        //}
-        //catch (NullReferenceException ex)
-        //{
-        //    Debug.Log("No one selected");
-        //}
+        GetComponent<RectTransform>().localScale = new Vector3(minScale, minScale, minScale);
     }
 
 
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        if(EventSystem)
 
-        //イベントに選択されたオブジェクトがない場合
-        GetComponent<RectTransform>().localScale = new Vector3(maxScale, maxScale, maxScale);
-        EventSystem.current.SetSelectedGameObject(gameObject);
-
-    }
 
 
 

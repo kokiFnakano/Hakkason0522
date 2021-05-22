@@ -2,15 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] List<MoneyButton> buttons;
-
-
-
-
     // Start is called before the first frame update
     void Start()
     {
@@ -28,14 +24,7 @@ public class Player : MonoBehaviour
     //ベットした値を取得
     public int GetRaiseValue()
     {
-        foreach(MoneyButton mb in buttons)
-        {
-            if (mb.enabled)
-                return mb.GetValue();
-        }
-
-        //ベットなし
-        return 0;
+        return EventSystem.current.currentSelectedGameObject.GetComponent<MoneyButton>().GetValue();
     }
 
 
@@ -43,10 +32,6 @@ public class Player : MonoBehaviour
     //ボタンの選択フラグをオフにする
     public void ResetButtons()
     {
-        foreach (MoneyButton mb in buttons)
-        {
-            //if (mb.enabled)
-            //    mb.GetComponent<Button>().
-        }
+        EventSystem.current.SetSelectedGameObject(null);
     }
 }
