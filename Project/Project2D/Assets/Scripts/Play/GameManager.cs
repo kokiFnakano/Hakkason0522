@@ -87,7 +87,12 @@ public class GameManager : MonoBehaviour
     {
         if(m_playerTurnFream < m_playerTurnFreamCount)
         {
+            Player player = m_player.GetComponent<Player>();
             //プレイヤーのレイズ額をグッズのカレントに足す
+            Goods goods = m_goods.GetComponent<Goods>();
+            goods.SetCurrentMoney(goods.GetCurrentMoney() + player.GetRaiseValue());
+
+            player.ResetButtons();
 
             m_turn = TURN.GUEST_TURN;
 
