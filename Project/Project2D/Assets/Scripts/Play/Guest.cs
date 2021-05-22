@@ -94,7 +94,7 @@ public class Guest : MonoBehaviour
         int bidNum = 0;
 
         // “üDˆÓ—~‚ğZo(‰¼)
-        float bidMotivation = m_wantPer * (m_voltage.GetVoltageValue() * 0.005f);
+        float bidMotivation = m_wantPer * (0.5f + m_voltage.GetVoltageValue() * 0.005f);
 
         // “üD‚·‚é‚©‚Ç‚¤‚©
         if (Random.Range(0.0f, 1.0f) < bidMotivation)
